@@ -25,30 +25,12 @@ const Cart = () => {
   };
   const fetchCartItemsAndDetails = async () => {
     try {
-      // Fetch cart items from the API
       const response = await axiosInstance.get("cart");
+      const cartItemsFromAPI = response.data.cartItems;
   
-      // Check if cartItems exists in the response
-      const cartItemsFromAPI = response.data.cartItems;  // Ensure 'data' is used to access the response body
+      console.log("hahahha",cartItemsFromAPI);
   
-      console.log(cartItemsFromAPI);
-  
-      // Fetch product details for each cart item
-      const cartWithDetails = await Promise.all(
-        cartItemsFromAPI.map(async (item) => {
-          const productDetails = item.product;  // Since product details are nested inside the 'product' object
-          if (productDetails) {
-            return {
-              ...item,
-              ...productDetails,  // Merging product details into the cart item
-            };
-          } else {
-            return item;
-          }
-        })
-      );
-  
-      setLoadedCartItems(cartWithDetails);  // Set the final cart items with product details
+      setLoadedCartItems(cartItemsFromAPI);
     } catch (error) {
       dispatch(setError("Failed to fetch cart items"));
     }
@@ -60,26 +42,29 @@ const Cart = () => {
 
   const handleCartQuantityChange = async (product_id, action) => {
     try {
-      const existingItem = loadedCartItems.find(item => item.product_id === product_id);
+      const existingItem = loadedCartItems.find(item => item.product.id === product_id);
+      console.log("hii",existingItem);
       if (!existingItem) return;
 
-      const currentQuantity = existingItem.quantity;
       let updatedCartItems = [...loadedCartItems];
-      const index = updatedCartItems.findIndex(item => item.product_id === product_id);
+      const index = updatedCartItems.findIndex(item => item.product.id === product_id);
+      console.log(index);
 
       if (action === 'increase') { //pending: when stock<quantity
         updatedCartItems[index].quantity += 1;
         dispatch(updateCartQuantity({ product_id, quantity: updatedCartItems[index].quantity }));
-        await axiosInstance.post('cart', { product_id, quantity: updatedCartItems[index].quantity });
+        await axiosInstance.post('cart', { product_id, quantity: 1 });
+
       } else if (action === 'decrease') {
-        if (currentQuantity === 1) {
-          updatedCartItems = updatedCartItems.filter(item => item.product_id !== product_id);
+        if (updatedCartItems[index].quantity === 1) {
+          const cartItemId = existingItem.id;
+          updatedCartItems = updatedCartItems.filter(item => item.product.id !== product_id);
           dispatch(removeFromCart({ product_id }));
-          await axiosInstance.delete(`cart/${product_id}`);
+          await handleRemoveItem(cartItemId);
         } else {
           updatedCartItems[index].quantity -= 1;
           dispatch(updateCartQuantity({ product_id, quantity: updatedCartItems[index].quantity }));
-          await axiosInstance.post('cart/decrease', { product_id, quantity: updatedCartItems[index].quantity });
+          await axiosInstance.post('cart/decrease', { product_id, quantity: 1 });
         }
       }
 
@@ -89,13 +74,14 @@ const Cart = () => {
     }
   };
 
-  const handleRemoveItem = async (product_id) => {
+  const handleRemoveItem = async (cartItemId) => {
     try {
-      await axiosInstance.delete(`cart/${product_id}`);
+      console.log("cartItemId",cartItemId);
+      await axiosInstance.delete(`cart/${cartItemId}`);
       setLoadedCartItems((prevItems) =>
-        prevItems.filter((item) => item.product_id !== product_id)
+        prevItems.filter((item) => item.id !== cartItemId)
       );
-      dispatch(removeFromCart({ product_id }));
+      dispatch(removeFromCart({cartItemId }));
     } catch (error) {
       dispatch(setError('Failed to remove item from cart'));
     }
@@ -106,7 +92,7 @@ const Cart = () => {
       const response = await axiosInstance.post("/orders");
       const orderData = response.data;
       dispatch(setOrderData(orderData));
-      console.log(orderData)
+      console.log("orderData", orderData)
       navigate("/order");
     } catch (err) {
       setError("Error placing order.");
@@ -131,37 +117,36 @@ const Cart = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6">
+    <div className="min-h-screen bg-gray-100 p-4 md:p-6">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-8">Shopping Cart ({loadedCartItems.length} items)</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">Shopping Cart ({loadedCartItems.length} items)</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
             {loadedCartItems.map((item) => {
               // Get product details for each item
               console.log(item);
-              const { product_id, quantity, name, description, price, image_url, brand } = item;
 
               return (
-                <div key={product_id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 transition-all hover:shadow-md">
+                <div key={item.product.id} className="bg-white rounded-lg shadow-sm p-4 transition-all hover:shadow-md">
                   <div className="flex items-center space-x-4">
                     <img
-                      src={`http://localhost:5000${image_url}`}
-                      alt={name}   // Product name
+                      src={`http://localhost:5000${item.product.image_url}`}
+                      alt={item.product.name}   // Product name
                       className="w-24 h-24 object-cover rounded-lg"
                       loading="lazy"
                     />
                     <div className="flex-1">
-                      <div className='uppercase tracking-wide text-sm text-indigo-500 font-semibold'>{brand}</div>
-                      <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{name}</h3>
-                      <p className="text-gray-600 dark:text-gray-300">${price}</p>
+                      <div className='uppercase tracking-wide text-sm text-indigo-500 font-semibold'>{item.product.brand}</div>
+                      <h3 className="text-lg font-semibold text-gray-800">{item.product.name}</h3>
+                      <p className="text-gray-600">${item.product.price}</p>
 
                       <div className="flex items-center mt-2 space-x-2">
-                        <button onClick={() => handleCartQuantityChange(product_id, 'decrease')} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <button onClick={() => handleCartQuantityChange(item.product.id, 'decrease')} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
                           <FiMinus className="w-5 h-5" />
                         </button>
-                        <span className="w-8 text-center">{quantity}</span>
-                        <button onClick={() => handleCartQuantityChange(product_id, 'increase')} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <span className="w-8 text-center">{item.quantity}</span>
+                        <button onClick={() => handleCartQuantityChange(item.product.id, 'increase')} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
                           <FiPlus className="w-5 h-5" />
                         </button>
                       </div>
@@ -169,10 +154,10 @@ const Cart = () => {
 
                     <div className="flex flex-col items-end space-y-2">
                       <span className="font-semibold text-lg text-gray-800 dark:text-white">
-                        ${(price * quantity)}
+                        ${(item.product.price * item.quantity)}
                       </span>
                       <div className="flex space-x-2">
-                        <button onClick={() => handleRemoveItem(product_id)} className="p-2 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <button onClick={() => handleRemoveItem(item.id)} className="p-2 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
                           <FiTrash2 className="w-5 h-5" />
                         </button>
                       </div>
@@ -185,23 +170,23 @@ const Cart = () => {
 
           <div className="lg:col-span-1">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 sticky top-4">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Order Summary</h2>
+              <h2 className="text-xl font-bold text-gray-800  mb-4">Order Summary</h2>
 
               <div className="space-y-2 mb-4">
-                <div className="flex justify-between text-gray-600 dark:text-gray-300">
+                <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
-                  <span>${loadedCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)}</span>
+                  <span>${loadedCartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0)}</span>
                 </div>
-                <div className="flex justify-between text-gray-600 dark:text-gray-300">
+                <div className="flex justify-between text-gray-600 ">
                   <span>Shipping</span>
                   <span>Free</span>
                 </div>
               </div>
 
               <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
-                <div className="flex justify-between text-lg font-bold text-gray-800 dark:text-white">
+                <div className="flex justify-between text-lg font-bold text-gray-800">
                   <span>Total</span>
-                  <span>${loadedCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)}</span>
+                  <span>${loadedCartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0)}</span>
                 </div>
               </div>
 
