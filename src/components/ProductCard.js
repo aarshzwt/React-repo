@@ -3,7 +3,7 @@ import { FaShoppingCart } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, setError } from '../redux/slices/cartSlice';
+import { addToCart, setCartItems, setError } from '../redux/slices/cartSlice';
 import { useNavigate } from 'react-router-dom';
 
 const ProductCard = () => {
@@ -11,43 +11,48 @@ const ProductCard = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const cartItems = useSelector((state) => state.cart.cartItems);
     const { id } = useParams();
     const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(null);
+    const cartItems = useSelector((state) => state.cart.cartItems);
 
     useEffect(() => {
-        const fetchProductById = async () => {
-            try {
-                const response = await axiosInstance.get(`products/${id}`);
-                setProduct(response.data.product);
-            } catch (error) {
-                console.log(error);
-                console.error('Failed to fetch product details', error);
-            }
+        const fetchData = async () => {
+          try {
+            const productResponse = await axiosInstance.get(`products/${id}`);
+            setProduct(productResponse.data.product);
+    
+            const cartResponse = await axiosInstance.get('cart');
+            dispatch(setCartItems(cartResponse.data.cartItems));
+          } catch (error) {
+            console.error('Failed to fetch data', error);
+          }
         };
+    
+        fetchData();
+      }, [id, dispatch]);
 
-        fetchProductById();
-    }, [id]);
-
+      const handleCart = async (product_id) => {
+          try {
+              const response = await axiosInstance.post('cart', { product_id, quantity: 1 });
+              dispatch(addToCart({ product_id }));
+              console.log(response);
+              navigate("/cart");  
+          } catch (error) {
+              console.log(error);
+              dispatch(setError('Failed to add to cart'));
+          }
+      };
+      if (loading) {
+        return <div>Loading...</div>;
+      }
+      
     if (!product) {
         return <div>Product not found.</div>;
     }
 
-    const isProductInCart = cartItems.some(item => item.product_id === product.id);
-    console.log(isProductInCart);
-
-    const handleCart = async (product_id) => {
-        try {
-            const response = await axiosInstance.post('cart', { product_id, quantity: 1 });
-            dispatch(addToCart({ product_id }));
-            console.log(response);
-
-            // navigate("/cart");  
-        } catch (error) {
-            console.log(error);
-            dispatch(setError('Failed to add to cart'));
-        }
-    };
+    const isProductInCart = product && cartItems.length > 0 && cartItems.some((item) => item.product && item.product.id === product.id);
+    console.log('Is product in cart:', isProductInCart);
 
 
     return (
