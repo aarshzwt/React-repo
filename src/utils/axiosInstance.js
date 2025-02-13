@@ -1,4 +1,5 @@
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 // Create axios instance with the API base URL
 const axiosInstance = axios.create({
@@ -19,6 +20,7 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
+    toast.error('Request failed, please try again.');
     return Promise.reject(error);
   }
 );

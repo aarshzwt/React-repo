@@ -12,6 +12,13 @@ import Cart from './components/Cart.js';
 import UserProfile from './components/UserProfile.js';
 import UpdateUserProfile from './components/UpdateUserProfile.js';
 import OrderConfirmation from './components/OrderConfirmation.js';
+import ProductForm from './components/ProductForm.js';
+import ProductGridAdmin from './components/ProductListAdmin.js';
+import ProductUpdateForm from './components/ProductUpdateForm.js';
+import UsersList from './components/UsersList.js';
+import AdminDashboard from './components/AdminDashboard.js';
+import OrderHistory from './components/OrderHistory.js';
+import OrderStatusUpdate from './components/OrderStatusUpdate.js';
 
 function App() {
   return (
@@ -26,6 +33,14 @@ function App() {
       <Route path="/users/profile" element={<UserProfile />} />
       <Route path="/users/profile/update" element={<UpdateUserProfile />} />
       <Route path="/order" element={<OrderConfirmation />} />
+      <Route path="/orders" element={<OrderHistory />} />
+      <Route path="/orders/update" element={<OrderStatusUpdate />} />
+
+      <Route path="/product/add" element={<ProductForm />} />
+      <Route path="/admin/product" element={<ProductGridAdmin />} />
+      <Route path="/products/update/:id" element={<ProductUpdateForm />} />
+      <Route path='/users' element={<UsersList/>} />
+      <Route path= '/admin' element={<AdminDashboard />} />
 
     </Routes>
     </>

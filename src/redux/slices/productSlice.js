@@ -47,12 +47,10 @@ const productSlice = createSlice({
             localStorage.setItem('wishlist', JSON.stringify(state.wishlist)); 
 
         },
-        setWishlist(state, action) {
-            state.wishlist = action.payload; // Set wishlist with initial values if needed
-        },
+        
     },
 });
 
-export const { setLoading, setProducts, deleteProduct, addToWishlist, removeFromWishlist, setWishlist, setError } = productSlice.actions;
+export const { setLoading, setProducts, deleteProduct, addToWishlist, removeFromWishlist, setError } = productSlice.actions;
 
 export default productSlice.reducer;

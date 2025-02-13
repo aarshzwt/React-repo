@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import axiosInstance from '../utils/axiosInstance';
 import { setLoading, setUserData, setError } from '../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
+import toast from "react-hot-toast";
 
 export default function Login() {
 
@@ -42,18 +43,19 @@ export default function Login() {
             
             dispatch(setUserData({
                 user: data.user,
-                role: data.role,
+                role: data.user.role,
                 token: data.token,
             }));
             setSuccess('User logged in successfully!');
             
-            if (data?.token) {
+            if (data.token) {
+                toast.success('User logged in successfully!');
                 navigate("/"); 
             } else {
-                setError('Login failed: Invalid credentials or missing token.');
+                toast.error('Login failed: Invalid credentials or missing token.');
             }
         } catch (error) {
-            // Handle errors (e.g., email already exists)
+            toast.error('Login failed: Invalid credentials or missing token.');
             dispatch(setError(error.response?.data?.message || 'Login failed.'));
         }
 

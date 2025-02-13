@@ -6,7 +6,7 @@ import axiosInstance from "../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
-  
+
   const dispatch = useDispatch();
   const { cartItems, loading, error } = useSelector((state) => state.cart);
   const [loadedCartItems, setLoadedCartItems] = useState([]);
@@ -27,12 +27,14 @@ const Cart = () => {
     try {
       const response = await axiosInstance.get("cart");
       const cartItemsFromAPI = response.data.cartItems;
-  
-      console.log("hahahha",cartItemsFromAPI);
-  
+      console.log("hahahha", cartItemsFromAPI);
       setLoadedCartItems(cartItemsFromAPI);
     } catch (error) {
-      dispatch(setError("Failed to fetch cart items"));
+      if (error.response && error.response.status === 404) {
+        setLoadedCartItems([]);
+      } else {
+        dispatch(setError("Failed to fetch cart items"));
+      }
     }
   };
 
@@ -43,7 +45,7 @@ const Cart = () => {
   const handleCartQuantityChange = async (product_id, action) => {
     try {
       const existingItem = loadedCartItems.find(item => item.product.id === product_id);
-      console.log("hii",existingItem);
+      console.log("hii", existingItem);
       if (!existingItem) return;
 
       let updatedCartItems = [...loadedCartItems];
@@ -76,12 +78,12 @@ const Cart = () => {
 
   const handleRemoveItem = async (cartItemId) => {
     try {
-      console.log("cartItemId",cartItemId);
+      console.log("cartItemId", cartItemId);
       await axiosInstance.delete(`cart/${cartItemId}`);
       setLoadedCartItems((prevItems) =>
         prevItems.filter((item) => item.id !== cartItemId)
       );
-      dispatch(removeFromCart({cartItemId }));
+      dispatch(removeFromCart({ cartItemId }));
     } catch (error) {
       dispatch(setError('Failed to remove item from cart'));
     }
@@ -106,10 +108,10 @@ const Cart = () => {
 
   if (loadedCartItems.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
         <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200 mb-2">Your cart is empty</h2>
         <p className="text-gray-500 dark:text-gray-400 mb-4">Add items to start shopping</p>
-        <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        <button onClick={() => navigate('/')} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           Continue Shopping
         </button>
       </div>

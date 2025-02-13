@@ -14,7 +14,19 @@ const initialState = {
     }
     return null;
   })(),
-  role: null,
+  role: (() => {
+    const role = localStorage.getItem('role');
+    if (role) {
+      try {
+        return role;
+      } catch (error) {
+        console.error('Error parsing role from localStorage:', error);
+        return null;
+      }
+    }
+    return null;
+  })(),
+  // role : null,
   isAuthenticated: !!localStorage.getItem("token"), // If token exists, user is authenticated
   loading: false,
   error: null,
@@ -36,6 +48,8 @@ const authSlice = createSlice({
       if (action.payload.token) {
         state.token = action.payload.token;
         localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("role", action.payload.role);
+
       } else {
         console.error('Token is undefined or missing');
       }
@@ -48,6 +62,7 @@ const authSlice = createSlice({
       state.role = null;
       state.isAuthenticated = false;
       localStorage.removeItem("token");
+      localStorage.removeItem("role");
     },
 
     setError(state, action) {

@@ -13,6 +13,9 @@ import { FaCartPlus } from 'react-icons/fa';
 export function CustomNavbar() {
 
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const role = useSelector((state) => state.auth.role);
+console.log("isAuthenticated", isAuthenticated)
+console.log("role", role)
 
   //using the redux state fetching categories so dont need to call apis again and again
   const categories = useSelector((state) => state.category.categories);
@@ -21,20 +24,20 @@ export function CustomNavbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleLogout = async(e) =>{
+  const handleLogout = async (e) => {
     e.preventDefault();
     dispatch(setLoading(true));
 
     try {
-        dispatch(logout());
-        navigate("/"); 
+      dispatch(logout());
+      navigate("/");
     } catch (error) {
-        console.error('Error:', error); 
-        dispatch(setError(error.response?.data?.message || 'Log Out failed.'));
+      console.error('Error:', error);
+      dispatch(setError(error.response?.data?.message || 'Log Out failed.'));
     }
   }
   return (
-    
+
     <>
       <Navbar collapseOnSelect expand="lg" bg="dark" data-bs-theme="dark">
         <Container>
@@ -64,9 +67,33 @@ export function CustomNavbar() {
 
             {isAuthenticated ? (
               <Nav>
-                <Nav.Link href="/cart" > <FaCartPlus className='text-gray-600 w-5 h-5 '/> Cart </Nav.Link>
+                {role === 'customer' && (
+                  <Nav.Link href="/cart">
+                    <FaCartPlus className='text-gray-600 w-5 h-5 ' /> Cart
+                  </Nav.Link>
+                )}
+                {role === 'customer' && (
+                  <Nav.Link href="/orders">
+                   Orders
+                  </Nav.Link>
+                )}
+                {role === 'admin' && (
+                  <Nav.Link href="/product/add">
+                    Add Product
+                  </Nav.Link> 
+                )}
+                {role === 'admin' && (
+                  <Nav.Link href="/admin/product">
+                   Update Product
+                  </Nav.Link>                
+                )}
+                 {role === 'admin' && (
+                  <Nav.Link href="/orders/update">
+                   Update Order
+                  </Nav.Link>                
+                )}
                 <Nav.Link href="/users/profile">Profile</Nav.Link>
-                <Nav.Link href="/logout" onClick={handleLogout}>Logout</Nav.Link> 
+                <Nav.Link href="/logout" onClick={handleLogout}>Logout</Nav.Link>
               </Nav>
             ) : (
               <Nav>

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
 import { useDispatch } from 'react-redux';
 import axiosInstance from '../utils/axiosInstance';
 import { setLoading, setUserData, setError } from '../redux/slices/authSlice';
+import toast from 'react-hot-toast';
 
 
 export default function UpdateUserProfile() {
@@ -18,7 +18,31 @@ export default function UpdateUserProfile() {
 
     const dispatch = useDispatch();
 
-    const [success, setSuccess] = useState('');
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            dispatch(setLoading(true));
+            try {
+                const response = await axiosInstance.get('users/profile');
+                const { data } = response;
+                setFormData({
+                    first_name: data.user.first_name,
+                    last_name: data.user.last_name,
+                    email: data.user.email
+                });
+                dispatch(setUserData({
+                    user: data,
+                    role: data.role,
+                }));
+                dispatch(setLoading(false));
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+                dispatch(setError('Failed to fetch profile data.'));
+                dispatch(setLoading(false));
+            }
+        };
+        fetchUserProfile();
+    }, [dispatch]);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -42,7 +66,12 @@ export default function UpdateUserProfile() {
                 user: data.data,
                 role: data.data.role,
             }));
-            setSuccess('User signed up successfully!');
+            setFormData({
+                first_name: "",
+                email: "",
+                last_name: "",
+              });
+            toast.success("Profile Updated Successfully")
         } catch (error) {
             console.error('Error:', error);
             // Handle errors (e.g., email already exists)
