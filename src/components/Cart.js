@@ -27,7 +27,6 @@ const Cart = () => {
     try {
       const response = await axiosInstance.get("cart");
       const cartItemsFromAPI = response.data.cartItems;
-      console.log("hahahha", cartItemsFromAPI);
       setLoadedCartItems(cartItemsFromAPI);
     } catch (error) {
       if (error.response && error.response.status === 404) {

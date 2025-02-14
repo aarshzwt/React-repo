@@ -6,7 +6,8 @@ import Row from 'react-bootstrap/Row';
 import { useDispatch } from 'react-redux';
 import axiosInstance from '../utils/axiosInstance';
 import { setLoading, setUserData, setError } from '../redux/slices/authSlice';
-
+import toast from 'react-hot-toast';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 export default function Signup() {
 
@@ -19,9 +20,7 @@ export default function Signup() {
     });
 
     const dispatch = useDispatch();
-
-    const [success, setSuccess] = useState('');
-
+    const navigate = useNavigate();
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevState) => ({
@@ -45,7 +44,10 @@ export default function Signup() {
                 user: data.data,
                 role: data.data.role,
             }));
-            setSuccess('User signed up successfully!');
+            if (response.status === 201) {
+                toast.success('Signed Up Successfully');
+                navigate("/login")
+              }
         } catch (error) {
             console.error('Error:', error);
             // Handle errors (e.g., email already exists)
@@ -110,7 +112,7 @@ export default function Signup() {
                 </Form.Group>
 
                 {/* Role Selection */}
-                <Form.Group controlId="formGridRole" className="mb-4">
+                {/* <Form.Group controlId="formGridRole" className="mb-4">
                     <Form.Label className="text-center d-block">Role</Form.Label>
                     <div className="flex justify-center gap-4">
                         <Form.Check
@@ -130,7 +132,7 @@ export default function Signup() {
                             onChange={handleChange}
                         />
                     </div>
-                </Form.Group>
+                </Form.Group> */}
 
                 {/* Submit Button */}
                 <Form.Group className="flex justify-center">

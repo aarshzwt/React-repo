@@ -5,9 +5,11 @@ import axiosInstance from '../utils/axiosInstance';
 import { setLoading, setCategories, setError } from '../redux/slices/categorySlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 
 export default function Category() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { categories, loading, error } = useSelector((state) => state.category);
 
     const [productsByCategory, setProductsByCategory] = useState({});
@@ -27,12 +29,10 @@ export default function Category() {
     const fetchProductsByCategory = async (categoryId) => {
         try {
             const response = await axiosInstance.get(`categories/products/${categoryId}`);
-
             setProductsByCategory((prevState) => ({
                 ...prevState,
                 [categoryId]: response.data.product,
             }));
-
         } catch (error) {
             setProductsByCategory((prevState) => ({
                 ...prevState,
@@ -50,6 +50,7 @@ export default function Category() {
             fetchProductsByCategory(categoryId); // Fetch products when the dropdown is opened
         }
     };
+
     useEffect(() => {
         fetchCategories();
     }, [dispatch]);
@@ -67,10 +68,17 @@ export default function Category() {
             {categories.length === 0 ? (
                 <p>No categories available.</p>
             ) : (
-                categories.map((category, index) => (
+                categories.map((category) => (
                     <Card
-                        key={index}
-                        style={{ width: '150px', position: 'relative' }} // Adjust width and position
+                    key={category.id}
+                    style={{ width: '150px', position: 'relative' }} // Adjust width and position
+                    onClick={() => {
+                        if (category.id) {
+                            navigate(`/productsByCategory/${category.id}`);
+                        } else {
+                            console.error('Category ID is undefined');
+                        }
+                    }}
                     >
                         <Card.Img
                             variant="top"
@@ -83,7 +91,6 @@ export default function Category() {
                             style={{ cursor: 'pointer', textAlign: 'center' }}
                         >
                             <Card.Title>{category.name} <FontAwesomeIcon icon={faCaretDown} /></Card.Title>
-
                         </Card.Body>
 
                         {/* Dropdown for products */}
@@ -105,7 +112,7 @@ export default function Category() {
                             >
                                 <h5>Products:</h5>
                                 <ul>
-                                    {productsByCategory[category.id] && productsByCategory[category.id].length === 0 ? (
+                                    {productsByCategory[category.id]?.length === 0 ? (
                                         <li>No products available.</li>
                                     ) : (
                                         productsByCategory[category.id]?.map((product, idx) => (

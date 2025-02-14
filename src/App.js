@@ -19,6 +19,7 @@ import UsersList from './components/UsersList.js';
 import AdminDashboard from './components/AdminDashboard.js';
 import OrderHistory from './components/OrderHistory.js';
 import OrderStatusUpdate from './components/OrderStatusUpdate.js';
+import ProductsByCategoryGrid from './components/ProductsByCategory.js';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
       <Route path='/signup' element={<Signup></Signup>} />
       <Route path='/login' element={<Login />} />
       <Route path="/products/:id" element={<ProductCard />} />
+      <Route path= "/productsByCategory/:id" element= {<ProductsByCategoryGrid />} />
       <Route path='/cart' element={<Cart></Cart>} />
       <Route path="/users/profile" element={<UserProfile />} />
       <Route path="/users/profile/update" element={<UpdateUserProfile />} />

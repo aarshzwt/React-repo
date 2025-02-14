@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaBox, FaShippingFast, FaCheck, FaSpinner, FaFileDownload, FaSearch } from "react-icons/fa";
 import axiosInstance from "../utils/axiosInstance"; // Import your axiosInstance
 import { format } from 'date-fns';
+import { useNavigate } from "react-router-dom";
 
 
 const OrderHistory = () => {
@@ -10,15 +11,19 @@ const OrderHistory = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const navigate = useNavigate()
     useEffect(() => {
         const fetchOrders = async () => {
             try {
                 setLoading(true);
                 const response = await axiosInstance.get("orders");
                 setOrders(response.data.orders);
-            } catch (err) {
-                setError("Failed to fetch orders");
+            } catch (error) {
+                if (error.response && error.response.status === 404) {
+                    setOrders([]);
+                } else {
+                    setError("Failed to fetch orders");
+                }
             } finally {
                 setLoading(false);
             }
@@ -114,7 +119,7 @@ const OrderHistory = () => {
                             </div>
                             <div className="text-right">
                                 <p className="font-bold">
-                                ₹{(item.price * item.quantity).toFixed(2)}
+                                    ₹{(item.price * item.quantity).toFixed(2)}
                                 </p>
                             </div>
                         </div>
@@ -150,6 +155,18 @@ const OrderHistory = () => {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="text-red-500 text-xl">{error}</div>
+            </div>
+        );
+    }
+    console.log(orders.length)
+    if (orders.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
+                <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200 mb-2">You have no any orders</h2>
+                <p className="text-gray-500 dark:text-gray-400 mb-4">Add items to start shopping</p>
+                <button onClick={() => navigate('/')} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    Continue Shopping
+                </button>
             </div>
         );
     }
