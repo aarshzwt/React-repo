@@ -16,7 +16,6 @@ import ProductForm from './components/ProductForm.js';
 import ProductGridAdmin from './components/ProductListAdmin.js';
 import ProductUpdateForm from './components/ProductUpdateForm.js';
 import UsersList from './components/UsersList.js';
-import AdminDashboard from './components/AdminDashboard.js';
 import OrderHistory from './components/OrderHistory.js';
 import OrderStatusUpdate from './components/OrderStatusUpdate.js';
 import ProductsByCategoryGrid from './components/ProductsByCategory.js';
@@ -42,9 +41,7 @@ function App() {
       <Route path="/admin/product" element={<ProductGridAdmin />} />
       <Route path="/products/update/:id" element={<ProductUpdateForm />} />
       <Route path='/users' element={<UsersList/>} />
-      <Route path= '/admin' element={<AdminDashboard />} />
       <Route path='/category/add' element={< AddCategoryForm/>} />
-
     </Routes>
     </>
   );
