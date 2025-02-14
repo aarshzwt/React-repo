@@ -40,8 +40,10 @@ const ProductCard = () => {
               toast.success("Item Added to Cart Successfully");
               navigate("/cart");  
           } catch (error) {
-              console.log(error);
               dispatch(setError('Failed to add to cart'));
+              if(error.status === 401){
+                toast.error("Login before continuing order process")
+              }
           }
       };
       if (loading) {

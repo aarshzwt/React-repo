@@ -72,7 +72,9 @@ const Cart = () => {
 
       setLoadedCartItems(updatedCartItems);
     } catch (error) {
-      dispatch(setError('Failed to update cart'));
+      if(error.status === 400){
+        toast.error("Not Enough Stock Available");
+      }
     }
   };
 

@@ -3,6 +3,8 @@ import { FiUpload, FiX } from "react-icons/fi";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import axiosInstance from "../utils/axiosInstance";
 import toast from "react-hot-toast";
+import { setCategories, setError, setLoading } from "../redux/slices/categorySlice";
+import { useDispatch } from "react-redux";
 
 const ProductForm = () => {
   const [formData, setFormData] = useState({
@@ -18,8 +20,20 @@ const ProductForm = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [categories, setCategoriesState] = useState([]);
 
+  const dispatch = useDispatch();
 
+  const fetchCategories = async () => {
+    try {
+        dispatch(setLoading());
+        const response = await axiosInstance.get('categories');
+        setCategoriesState(response.data.categories);
+        dispatch(setCategories(response.data.categories));
+    } catch (error) {
+        dispatch(setError('Failed to fetch categories'));
+    }
+};
   const validateForm = () => {
     const newErrors = {};
 
@@ -137,12 +151,13 @@ const ProductForm = () => {
   };
 
   useEffect(() => {
+    fetchCategories();
     return () => {
       if (imagePreview) {
         URL.revokeObjectURL(imagePreview);
       }
     };
-  }, [imagePreview]);
+  }, [imagePreview, dispatch]);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -214,20 +229,22 @@ const ProductForm = () => {
             </div>
 
             <div>
-              <label htmlFor="category_id" className="block text-sm font-medium text-gray-700"> category_id </label>
-              <input
-                type="number"
-                id="category_id"
-                value={formData.category_id}
-                onChange={(e) => setFormData(prev => ({ ...prev, category_id: e.target.value }))}
-                className={`mt-1 block w-full rounded-md shadow-sm ${errors.category_id ? 'border-red-500' : 'border-gray-300'} focus:ring-indigo-500 focus:border-indigo-500`}
-                min="1"
-                step="1"
-                placeholder="Enter category_id"
-              />
-              {errors.category_id && <p className="mt-1 text-sm text-red-500">{errors.category_id}</p>}
-            </div>
-
+                            <label htmlFor="category_id" className="block text-sm font-medium text-gray-700">Category</label>
+                            <select
+                                id="category_id"
+                                value={formData.category_id}
+                                onChange={(e) => setFormData(prev => ({ ...prev, category_id: e.target.value }))}
+                                className={`mt-1 block w-full rounded-md shadow-sm ${errors.category_id ? 'border-red-500' : 'border-gray-300'} focus:ring-indigo-500 focus:border-indigo-500`}
+                            >
+                                <option value="">Select a category</option>
+                                {categories.map((category) => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.category_id && <p className="mt-1 text-sm text-red-500">{errors.category_id}</p>}
+                        </div>
             <div>
               <label htmlFor="brand" className="block text-sm font-medium text-gray-700">Brand</label>
               <input

@@ -76,6 +76,11 @@ console.log("role", role)
                   </Nav.Link>
                 )}
                 {role === 'admin' && (
+                  <Nav.Link href="/users">
+                    Users List
+                  </Nav.Link> 
+                )}
+                {role === 'admin' && (
                   <Nav.Link href="/product/add">
                     Add Product
                   </Nav.Link> 

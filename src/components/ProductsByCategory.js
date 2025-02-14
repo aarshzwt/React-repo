@@ -34,7 +34,7 @@ const ProductCard = React.memo(({ product }) => {
                     loading="lazy"
                 />
                 <button
-                    onClick={() => handleWishlistToggle(product.id)}
+                    // onClick={() => handleWishlistToggle(product.id)}
                     className="absolute top-4 right-4 p-2 rounded-full bg-white/80 hover:bg-white transition-colors duration-200"
                     aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
                 >

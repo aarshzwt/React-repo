@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
 import { useDispatch } from 'react-redux';
 import axiosInstance from '../utils/axiosInstance';
 import { setLoading, setUserData, setError } from '../redux/slices/authSlice';
@@ -10,7 +9,6 @@ import toast from 'react-hot-toast';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 export default function Signup() {
-
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -19,23 +17,52 @@ export default function Signup() {
         role: 'customer'
     });
 
+    const [errors, setErrors] = useState({
+        first_name: '',
+        last_name: '',
+        email: '',
+        password: '',
+    });
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevState) => ({
             ...prevState,
             [name]: value
         }));
+
+        // Reset error for the field that is being edited
+        setErrors((prevState) => ({
+            ...prevState,
+            [name]: ''
+        }));
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+
+        // Check for empty fields
+        if (!formData.first_name) newErrors.first_name = 'First name is required';
+        if (!formData.last_name) newErrors.last_name = 'Last name is required';
+        if (!formData.email) newErrors.email = 'Email is required';
+        if (!formData.password) newErrors.password = 'Password is required';
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!validateForm()) return; 
+
         dispatch(setLoading(true));
 
         try {
-
             const response = await axiosInstance.post('auth/register', formData);
             console.log(response);
             const { data } = response;
@@ -44,22 +71,24 @@ export default function Signup() {
                 user: data.data,
                 role: data.data.role,
             }));
+
             if (response.status === 201) {
                 toast.success('Signed Up Successfully');
-                navigate("/login")
-              }
+                navigate("/login");
+            }
+
         } catch (error) {
             console.error('Error:', error);
-            // Handle errors (e.g., email already exists)
+            if (error.status === 400) {
+                toast.error('Email already exists');
+            }
             dispatch(setError(error.response?.data?.message || 'Signup failed.'));
         }
-
     };
 
     return (
         <div className="flex justify-center items-center h-screen bg-gray-100">
             <Form onSubmit={handleSubmit} className="shadow-lg p-8 rounded-lg bg-white w-[80%] max-w-md">
-                {/* First Name */}
                 <Form.Group controlId="formGridFirstName" className="mb-4">
                     <Form.Label>First Name *</Form.Label>
                     <Form.Control
@@ -68,11 +97,11 @@ export default function Signup() {
                         name="first_name"
                         value={formData.first_name}
                         onChange={handleChange}
-                        required
+                        className={errors.first_name ? 'is-invalid' : ''}
                     />
+                    {errors.first_name && <div className="text-danger">{errors.first_name}</div>}
                 </Form.Group>
 
-                {/* Last Name */}
                 <Form.Group controlId="formGridLastName" className="mb-4">
                     <Form.Label>Last Name *</Form.Label>
                     <Form.Control
@@ -81,11 +110,11 @@ export default function Signup() {
                         name="last_name"
                         value={formData.last_name}
                         onChange={handleChange}
-                        required
+                        className={errors.last_name ? 'is-invalid' : ''}
                     />
+                    {errors.last_name && <div className="text-danger">{errors.last_name}</div>}
                 </Form.Group>
 
-                {/* Email */}
                 <Form.Group controlId="formGridEmail" className="mb-4">
                     <Form.Label>Email *</Form.Label>
                     <Form.Control
@@ -94,11 +123,11 @@ export default function Signup() {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        required
+                        className={errors.email ? 'is-invalid' : ''}
                     />
+                    {errors.email && <div className="text-danger">{errors.email}</div>}
                 </Form.Group>
 
-                {/* Password */}
                 <Form.Group controlId="formGridPassword" className="mb-4">
                     <Form.Label>Password *</Form.Label>
                     <Form.Control
@@ -107,34 +136,11 @@ export default function Signup() {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        required
+                        className={errors.password ? 'is-invalid' : ''}
                     />
+                    {errors.password && <div className="text-danger">{errors.password}</div>}
                 </Form.Group>
 
-                {/* Role Selection */}
-                {/* <Form.Group controlId="formGridRole" className="mb-4">
-                    <Form.Label className="text-center d-block">Role</Form.Label>
-                    <div className="flex justify-center gap-4">
-                        <Form.Check
-                            type="radio"
-                            label="Customer"
-                            name="role"
-                            value="customer"
-                            checked={formData.role === 'customer'}
-                            onChange={handleChange}
-                        />
-                        <Form.Check
-                            type="radio"
-                            label="Admin"
-                            name="role"
-                            value="admin"
-                            checked={formData.role === 'admin'}
-                            onChange={handleChange}
-                        />
-                    </div>
-                </Form.Group> */}
-
-                {/* Submit Button */}
                 <Form.Group className="flex justify-center">
                     <Col xs="auto">
                         <Button variant="primary" type="submit" block>

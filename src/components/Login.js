@@ -78,7 +78,7 @@ export default function Login() {
                 toast.error('Login failed: Invalid credentials or missing token.');
             }
         } catch (error) {
-            toast.error('Login failed: Invalid credentials or missing token.');
+            toast.error('Login failed: Invalid credentials');
             dispatch(setError(error.response?.data?.message || 'Login failed.'));
         }
     };

@@ -4,7 +4,6 @@ import axiosInstance from "../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, setProducts, setError } from "../redux/slices/productSlice";
-import { Link } from 'react-router-dom';
 import toast from "react-hot-toast";
 
 

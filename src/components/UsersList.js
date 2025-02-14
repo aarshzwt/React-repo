@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import { FiSearch, FiEdit2, FiEye } from "react-icons/fi";
-import { format } from "date-fns";
-import axios from "axios";
+import { FiEdit2, FiEye } from "react-icons/fi";
 import axiosInstance from "../utils/axiosInstance";
 
 const UsersList = () => {
@@ -13,13 +11,13 @@ const UsersList = () => {
   const [error, setError] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
-  const usersPerPage = 2;
+  const usersPerPage = 20;
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get("users"); // Adjust the URL as per your backend
+        const response = await axiosInstance.get("users");
         setUsers(response.data.users);
         setFilteredUsers(response.data.users);
       } catch (err) {
@@ -60,7 +58,6 @@ const UsersList = () => {
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   const getRoleColor = (role) => {
     const colors = {
@@ -89,18 +86,7 @@ const UsersList = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search users..."
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-        </div>
-      </div>
+      
 
       <div className="overflow-x-auto bg-white rounded-lg shadow">
         <table className="min-w-full table-auto">
@@ -176,27 +162,7 @@ const UsersList = () => {
         </div>
       )}
 
-      <div className="mt-4 flex items-center justify-between">
-        <div className="text-sm text-gray-700">
-          Showing {indexOfFirstUser + 1} to {Math.min(indexOfLastUser, filteredUsers.length)} of {filteredUsers.length} results
-        </div>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Next
-          </button>
-        </div>
-      </div>
+     
     </div>
   );
 };
