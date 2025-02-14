@@ -228,23 +228,6 @@ const ProductForm = () => {
               {errors.category_id && <p className="mt-1 text-sm text-red-500">{errors.category_id}</p>}
             </div>
 
-
-            {/* <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category *</label>
-              <select
-                id="category"
-                value={formData.category}
-                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                className={`mt-1 block w-full rounded-md shadow-sm ${errors.category ? 'border-red-500' : 'border-gray-300'} focus:ring-indigo-500 focus:border-indigo-500`}
-              >
-                <option value="">Select a category</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
-              {errors.category && <p className="mt-1 text-sm text-red-500">{errors.category}</p>}
-            </div> */}
-
             <div>
               <label htmlFor="brand" className="block text-sm font-medium text-gray-700">Brand</label>
               <input

@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Card from 'react-bootstrap/Card';
 import axiosInstance from '../utils/axiosInstance';
 import { setLoading, setCategories, setError } from '../redux/slices/categorySlice';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 
 export default function Category() {
@@ -12,8 +10,9 @@ export default function Category() {
     const navigate = useNavigate();
     const { categories, loading, error } = useSelector((state) => state.category);
 
+
     const [productsByCategory, setProductsByCategory] = useState({});
-    const [isDropdownOpen, setIsDropdownOpen] = useState(null);
+    const role = useSelector((state) => state.auth.role);
 
     const fetchCategories = async () => {
         try {
@@ -42,15 +41,6 @@ export default function Category() {
         }
     };
 
-    const toggleDropdown = (categoryId) => {
-        if (isDropdownOpen === categoryId) {
-            setIsDropdownOpen(null); // Close the dropdown if it's already open
-        } else {
-            setIsDropdownOpen(categoryId);
-            fetchProductsByCategory(categoryId); // Fetch products when the dropdown is opened
-        }
-    };
-
     useEffect(() => {
         fetchCategories();
     }, [dispatch]);
@@ -64,67 +54,55 @@ export default function Category() {
     }
 
     return (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center', marginTop: '10px' }}>
-            {categories.length === 0 ? (
-                <p>No categories available.</p>
-            ) : (
-                categories.map((category) => (
-                    <Card
-                    key={category.id}
-                    style={{ width: '150px', position: 'relative' }} // Adjust width and position
-                    onClick={() => {
-                        if (category.id) {
-                            navigate(`/productsByCategory/${category.id}`);
-                        } else {
-                            console.error('Category ID is undefined');
-                        }
-                    }}
-                    >
-                        <Card.Img
-                            variant="top"
-                            src={`http://localhost:5000${category.image_url}`}
-                            alt={category.name}
-                            style={{ height: '140px', objectFit: 'cover' }}
-                        />
-                        <Card.Body
-                            onClick={() => toggleDropdown(category.id)}
-                            style={{ cursor: 'pointer', textAlign: 'center' }}
+        <div style={{ marginTop: '10px' }}>
+            <h2 className="text-3xl font-bold text-gray-800 mb-8">Featured Categories</h2>
+            <div className="flex items-center justify-end space-x-4">
+                {role === 'admin' && (
+                    <>
+                        <button
+                            className='bg-indigo-600 hover:bg-indigo-700 px-4 py-2 border border-transparent rounded-md shadow-sm text-medium font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center'
+                            onClick={() => navigate('/category/add')}
                         >
-                            <Card.Title>{category.name} <FontAwesomeIcon icon={faCaretDown} /></Card.Title>
-                        </Card.Body>
+                            Add Category
+                        </button>
+                    </>
+                )}
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center' }}>
 
-                        {/* Dropdown for products */}
-                        {isDropdownOpen === category.id && productsByCategory[category.id] && (
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    top: '100%', // Position dropdown below the category image
-                                    left: '0',
-                                    width: '100%',
-                                    maxHeight: '200px', // Maximum height for the dropdown
-                                    overflowY: 'auto', // Scroll if content overflows
-                                    backgroundColor: '#fff',
-                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Shadow for dropdown
-                                    padding: '10px',
-                                    borderRadius: '5px',
-                                    zIndex: '1000', // Ensure dropdown is above other content
-                                }}
+                {categories.length === 0 ? (
+                    <p>No categories available.</p>
+                ) : (
+                    categories.map((category) => (
+
+                        <Card
+                            key={category.id}
+                            style={{ width: '150px', position: 'relative' }} // Adjust width and position
+                            onClick={() => {
+                                if (category.id) {
+                                    navigate(`/productsByCategory/${category.id}`);
+                                } else {
+                                    console.error('Category ID is undefined');
+                                }
+                            }}
+                        >
+                            <Card.Img
+                                variant="top"
+                                src={`http://localhost:5000${category.image_url}`}
+                                alt={category.name}
+                                style={{ height: '140px', objectFit: 'cover' }}
+                            />
+                            <Card.Body
+                                style={{ cursor: 'pointer', textAlign: 'center' }}
                             >
-                                <h5>Products:</h5>
-                                <ul>
-                                    {productsByCategory[category.id]?.length === 0 ? (
-                                        <li>No products available.</li>
-                                    ) : (
-                                        productsByCategory[category.id]?.map((product, idx) => (
-                                            <li key={idx}>{product.name}</li>
-                                        ))
-                                    )}
-                                </ul>
-                            </div>
-                        )}
-                    </Card>
-                ))
-            )}
+                                <Card.Title>{category.name} </Card.Title>
+                            </Card.Body>
+
+
+                        </Card>
+                    ))
+                )}
+            </div>
         </div>
     );
 }

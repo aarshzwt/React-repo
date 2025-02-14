@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart, removeFromCart, updateCartQuantity, setError, setLoading, setOrderData } from "../redux/slices/cartSlice";
 import axiosInstance from "../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Cart = () => {
 
@@ -76,6 +77,11 @@ const Cart = () => {
   };
 
   const handleRemoveItem = async (cartItemId) => {
+    const isConfirmed = window.confirm("Are you sure you want to remove this item from the cart?");
+
+    if (!isConfirmed) {
+      return;
+    }
     try {
       console.log("cartItemId", cartItemId);
       await axiosInstance.delete(`cart/${cartItemId}`);
@@ -83,6 +89,7 @@ const Cart = () => {
         prevItems.filter((item) => item.id !== cartItemId)
       );
       dispatch(removeFromCart({ cartItemId }));
+      toast.success("Product removed from cart")
     } catch (error) {
       dispatch(setError('Failed to remove item from cart'));
     }
@@ -93,9 +100,10 @@ const Cart = () => {
       const response = await axiosInstance.post("/orders");
       const orderData = response.data;
       dispatch(setOrderData(orderData));
-      console.log("orderData", orderData)
+      toast.success("Order Placed Successfully");
       navigate("/order");
     } catch (err) {
+      toast.error("Order could not be placed");
       setError("Error placing order.");
     }
   };
@@ -129,25 +137,27 @@ const Cart = () => {
               console.log(item);
 
               return (
-                <div key={item.product.id} className="bg-white rounded-lg shadow-sm p-4 transition-all hover:shadow-md">
+                <div key={item.product.id} className="bg-white rounded-lg shadow-sm p-4 transition-all hover:shadow-md" >
                   <div className="flex items-center space-x-4">
                     <img
                       src={`http://localhost:5000${item.product.image_url}`}
                       alt={item.product.name}   // Product name
-                      className="w-24 h-24 object-cover rounded-lg"
+                      className="w-24 h-24 object-cover rounded-lg cursor-pointer transition duration-300 ease-in-out transform hover:scale-110"
                       loading="lazy"
+                      onClick={() => navigate(`/products/${item.product.id}`)}
+
                     />
                     <div className="flex-1">
                       <div className='uppercase tracking-wide text-sm text-indigo-500 font-semibold'>{item.product.brand}</div>
-                      <h3 className="text-lg font-semibold text-gray-800">{item.product.name}</h3>
+                      <h3 className="text-lg font-semibold text-gray-700 cursor-pointer hover:text-black" onClick={() => navigate(`/products/${item.product.id}`)} >{item.product.name}</h3>
                       <p className="text-gray-600">${item.product.price}</p>
 
                       <div className="flex items-center mt-2 space-x-2">
-                        <button onClick={() => handleCartQuantityChange(item.product.id, 'decrease')} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <button onClick={() => handleCartQuantityChange(item.product.id, 'decrease')} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                           <FiMinus className="w-5 h-5" />
                         </button>
                         <span className="w-8 text-center">{item.quantity}</span>
-                        <button onClick={() => handleCartQuantityChange(item.product.id, 'increase')} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <button onClick={() => handleCartQuantityChange(item.product.id, 'increase')} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                           <FiPlus className="w-5 h-5" />
                         </button>
                       </div>
@@ -209,7 +219,9 @@ const Cart = () => {
                   Proceed to Checkout
                 </button>
 
-                <button className="w-full px-6 py-3 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                <button className="w-full px-6 py-3 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  onClick={() => navigate('/')}
+                >
                   Continue Shopping
                 </button>
               </div>

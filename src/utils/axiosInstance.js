@@ -1,7 +1,6 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-// Create axios instance with the API base URL
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:5000/api/',
   headers: {
@@ -9,7 +8,6 @@ const axiosInstance = axios.create({
   }
 });
 
-// You can add interceptors to modify requests or responses globally
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');

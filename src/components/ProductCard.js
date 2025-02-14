@@ -5,6 +5,7 @@ import axiosInstance from '../utils/axiosInstance';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, setCartItems, setError } from '../redux/slices/cartSlice';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const ProductCard = () => {
 
@@ -36,7 +37,7 @@ const ProductCard = () => {
           try {
               const response = await axiosInstance.post('cart', { product_id, quantity: 1 });
               dispatch(addToCart({ product_id }));
-              console.log(response);
+              toast.success("Item Added to Cart Successfully");
               navigate("/cart");  
           } catch (error) {
               console.log(error);

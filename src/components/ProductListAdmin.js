@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, setProducts, setError } from "../redux/slices/productSlice";
 import { Link } from 'react-router-dom';
+import toast from "react-hot-toast";
 
 
 
@@ -15,14 +16,13 @@ const ProductCard = React.memo(({ product}) => {
   const onDelete = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        // Call the API to delete the product
         await axiosInstance.delete(`products/${productId}`);
-        
-        // Dispatch an action to remove the product from the state
         dispatch(setProducts(prevProducts =>
           prevProducts.filter(product => product.id !== productId)
         ));
+        toast.success("Product has been deleted successfully");
       } catch (error) {
+        toast.success("Failed to delete product");
         dispatch(setError('Failed to delete product'));
       }
     }

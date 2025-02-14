@@ -41,7 +41,7 @@ console.log("role", role)
     <>
       <Navbar collapseOnSelect expand="lg" bg="dark" data-bs-theme="dark">
         <Container>
-          <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
+          <Navbar.Brand href="/">E-Commerce Project</Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto">
@@ -51,13 +51,11 @@ console.log("role", role)
                 className="me-2"
                 aria-label="Search"
               />
-              <Nav.Link href="#features">Features</Nav.Link>
-              <Nav.Link href="#pricing">Pricing</Nav.Link>
 
               {categories.length > 0 && (
                 <NavDropdown title="Categories" id="collapsible-nav-dropdown">
                   {categories.map((category, index) => (
-                    <NavDropdown.Item key={index} href={`#category/${category.id}`}>
+                    <NavDropdown.Item key={index} href={`/productsByCategory/${category.id}`}>
                       {category.name}
                     </NavDropdown.Item>
                   ))}

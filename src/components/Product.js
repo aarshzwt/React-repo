@@ -3,7 +3,7 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoading, setProducts, setError, addToWishlist, removeFromWishlist } from '../redux/slices/productSlice';
 import axiosInstance from '../utils/axiosInstance';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // ProductCard component to render each product
 const ProductCard = React.memo(({ product }) => {
     const dispatch = useDispatch();
@@ -16,7 +16,7 @@ const ProductCard = React.memo(({ product }) => {
                 const response = await axiosInstance.delete(`/wishlist/${product_id}`);
                 dispatch(removeFromWishlist(product_id));
             } else {
-                const response = await axiosInstance.post('/wishlist', {product_id});
+                const response = await axiosInstance.post('/wishlist', { product_id });
                 dispatch(addToWishlist(product_id));
             }
         } catch (error) {
@@ -62,7 +62,9 @@ const ProductCard = React.memo(({ product }) => {
 // ProductGrid component to render all products
 const ProductGrid = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { products, loading, error } = useSelector((state) => state.product);
+    const role = useSelector((state) => state.auth.role);
 
     const fetchProducts = async () => {
         dispatch(setLoading());
@@ -88,7 +90,27 @@ const ProductGrid = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-8">Featured Products</h2>
+            <div className="flex justify-between px-4 py-2">
+                <h2 className="text-3xl font-bold text-gray-800 mb-8">Featured Products</h2>
+                <div className="flex items-center justify-end space-x-4">
+                    {role === 'admin' && (
+                        <>
+                            <button
+                                className='bg-indigo-600 hover:bg-indigo-700 px-4 py-2 border border-transparent rounded-md shadow-sm text-medium font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center'
+                                onClick={() => navigate('/product/add')}
+                            >
+                                Add Product
+                            </button>
+                            <button
+                                className='bg-indigo-600 hover:bg-indigo-700 px-4 py-2 border border-transparent rounded-md shadow-sm text-medium font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center'
+                                onClick={() => navigate('/admin/product')}                    >
+                                Update Product
+                            </button>
+                        </>
+                    )}
+                </div>
+
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                 {products.map((product) => (
                     <ProductCard key={product.id} product={product} />

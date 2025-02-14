@@ -190,14 +190,7 @@ const OrderHistory = () => {
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Order History</h1>
-          <div className="mt-4 relative">
-            <input
-              type="text"
-              placeholder="Search orders..."
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <FaSearch className="absolute left-3 top-3 text-gray-400" />
-          </div>
+         
         </div>
 
         {orders.length === 0 ? (

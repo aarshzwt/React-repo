@@ -61,7 +61,7 @@ export default function Signup() {
             <Form onSubmit={handleSubmit} className="shadow-lg p-8 rounded-lg bg-white w-[80%] max-w-md">
                 {/* First Name */}
                 <Form.Group controlId="formGridFirstName" className="mb-4">
-                    <Form.Label>First Name</Form.Label>
+                    <Form.Label>First Name *</Form.Label>
                     <Form.Control
                         type="text"
                         placeholder="First Name"
@@ -74,7 +74,7 @@ export default function Signup() {
 
                 {/* Last Name */}
                 <Form.Group controlId="formGridLastName" className="mb-4">
-                    <Form.Label>Last Name</Form.Label>
+                    <Form.Label>Last Name *</Form.Label>
                     <Form.Control
                         type="text"
                         placeholder="Last Name"
@@ -87,7 +87,7 @@ export default function Signup() {
 
                 {/* Email */}
                 <Form.Group controlId="formGridEmail" className="mb-4">
-                    <Form.Label>Email</Form.Label>
+                    <Form.Label>Email *</Form.Label>
                     <Form.Control
                         type="email"
                         placeholder="Enter email"
@@ -100,7 +100,7 @@ export default function Signup() {
 
                 {/* Password */}
                 <Form.Group controlId="formGridPassword" className="mb-4">
-                    <Form.Label>Password</Form.Label>
+                    <Form.Label>Password *</Form.Label>
                     <Form.Control
                         type="password"
                         placeholder="Password"

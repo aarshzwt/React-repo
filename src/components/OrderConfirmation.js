@@ -96,7 +96,7 @@ const OrderConfirmation = () => {
                   <p className="text-gray-600">Quantity: {product.quantity}</p>
                 </div>
                 <p className="font-semibold">
-                  ${(product.price * product.quantity).toFixed(2)}
+                ₹{(product.price * product.quantity).toFixed(2)}
                 </p>
               </div>
             ))
@@ -110,7 +110,7 @@ const OrderConfirmation = () => {
             <div className="flex justify-between">
               <p className="text-gray-600">Subtotal</p>
               <p className="font-medium">
-              ${parseFloat(orderDetails?.order?.total_price).toFixed(2)}
+              ₹{parseFloat(orderDetails?.order?.total_price).toFixed(2)}
               </p>
             </div>
             <div className="flex justify-between">
@@ -125,7 +125,7 @@ const OrderConfirmation = () => {
               <div className="flex justify-between">
                 <p className="text-lg font-semibold">Total</p>
                 <p className="text-lg font-semibold">
-                ${parseFloat(orderDetails?.order?.total_price).toFixed(2)}
+                ₹{parseFloat(orderDetails?.order?.total_price).toFixed(2)}
                 </p>
               </div>
             </div>

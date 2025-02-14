@@ -102,7 +102,7 @@ const ProductsByCategoryGrid = () => {
     }
 
     if (error) {
-        return <p>{error}</p>;
+        return <p>{error}:  No products for this category</p>;
     }
 
     return (

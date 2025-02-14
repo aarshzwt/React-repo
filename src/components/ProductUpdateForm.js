@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { FiUpload, FiX } from "react-icons/fi";
-import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import axiosInstance from "../utils/axiosInstance";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
+import { setCategories, setError, setLoading } from "../redux/slices/categorySlice";
+import toast from "react-hot-toast";
 
 const ProductUpdateForm = () => {
     const [formData, setFormData] = useState({
@@ -22,9 +23,19 @@ const ProductUpdateForm = () => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [imagePreview, setImagePreview] = useState(null);
     const [product, setProduct] = useState(null);
-
+    const [categories, setCategoriesState] = useState([]);
 
     const dispatch = useDispatch();
+    const fetchCategories = async () => {
+        try {
+            dispatch(setLoading());
+            const response = await axiosInstance.get('categories');
+            setCategoriesState(response.data.categories);
+            dispatch(setCategories(response.data.categories));
+        } catch (error) {
+            dispatch(setError('Failed to fetch categories'));
+        }
+    };
 
     useEffect(() => {
         const fetchProductById = async () => {
@@ -53,6 +64,7 @@ const ProductUpdateForm = () => {
             }
         };
         fetchProductById();
+        fetchCategories();
 
         return () => {
             if (imagePreview) {
@@ -60,7 +72,7 @@ const ProductUpdateForm = () => {
             }
         };
 
-    }, [id, imagePreview]);
+    }, [id, imagePreview, dispatch]);
 
 
     const validateForm = () => {
@@ -152,6 +164,7 @@ const ProductUpdateForm = () => {
                         image: "",
                     });
                     setImagePreview(null); // Clear image preview
+                    toast.success("Product Updated Successfully");
                 }
                 console.log("success");
             } catch (error) {
@@ -178,11 +191,11 @@ const ProductUpdateForm = () => {
         <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto">
                 <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 space-y-6">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">Add New Product</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6">Update Product</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Product Name *</label>
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Product Name</label>
                             <input
                                 type="text"
                                 id="name"
@@ -195,7 +208,7 @@ const ProductUpdateForm = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price *</label>
+                            <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price</label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <span className="text-gray-500 sm:text-sm">$</span>
@@ -227,7 +240,7 @@ const ProductUpdateForm = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="stock" className="block text-sm font-medium text-gray-700">Stock *</label>
+                            <label htmlFor="stock" className="block text-sm font-medium text-gray-700">Stock</label>
                             <input
                                 type="number"
                                 id="stock"
@@ -242,17 +255,20 @@ const ProductUpdateForm = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="category_id" className="block text-sm font-medium text-gray-700"> category_id </label>
-                            <input
-                                type="number"
+                            <label htmlFor="category_id" className="block text-sm font-medium text-gray-700">Category</label>
+                            <select
                                 id="category_id"
                                 value={formData.category_id}
                                 onChange={(e) => setFormData(prev => ({ ...prev, category_id: e.target.value }))}
                                 className={`mt-1 block w-full rounded-md shadow-sm ${errors.category_id ? 'border-red-500' : 'border-gray-300'} focus:ring-indigo-500 focus:border-indigo-500`}
-                                min="1"
-                                step="1"
-                                placeholder="Enter category_id"
-                            />
+                            >
+                                <option value="">Select a category</option>
+                                {categories.map((category) => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
                             {errors.category_id && <p className="mt-1 text-sm text-red-500">{errors.category_id}</p>}
                         </div>
 
@@ -287,7 +303,7 @@ const ProductUpdateForm = () => {
                         </div>
 
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700">Product Image *</label>
+                            <label className="block text-sm font-medium text-gray-700">Product Image</label>
                             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                                 <div className="space-y-1 text-center">
                                     <FiUpload className="mx-auto h-12 w-12 text-gray-400" />
