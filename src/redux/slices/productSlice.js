@@ -3,14 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 // Initial state for the products
 const initialState = {
     products: [],
-    wishlist: (() => {
-        try {
-            return JSON.parse(localStorage.getItem('wishlist')) || [];
-        } catch (error) {
-            console.error('Error parsing wishlist from localStorage:', error);
-            return [];
-        }
-    })(),
+    wishlist: [],
     loading: false,
     error: null,
 };
@@ -35,17 +28,15 @@ const productSlice = createSlice({
             state.loading = false;
         },
         addToWishlist(state, action) {
-            const productId = action.payload;
-            if (!state.wishlist.includes(productId)) {
-                state.wishlist.push(productId);
-                localStorage.setItem('wishlist', JSON.stringify(state.wishlist)); 
+            const {productId, userId} = action.payload;
+            const existingProductInWishlist = state.wishlist.filter(item => item.user_id === userId && item.product_id === productId );
+            if (!state.wishlist.includes(existingProductInWishlist)) {
+                state.wishlist.push(existingProductInWishlist);
             }
         },
         removeFromWishlist(state, action) {
-            const productId = action.payload;
-            state.wishlist = state.wishlist.filter(id => id !== productId);
-            localStorage.setItem('wishlist', JSON.stringify(state.wishlist)); 
-
+            const {productId, userId} = action.payload;
+            state.wishlist = state.wishlist.filter(item => item.user_id !== userId && item.product_id !== productId );
         },
         
     },

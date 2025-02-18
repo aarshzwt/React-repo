@@ -1,7 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  user: null,
+  user: (() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        return JSON.parse(user);
+      } catch (error) {
+        console.error("Error parsing user from localStorage:", error);
+        return null;
+      }
+    }
+    return null; 
+  })(),
   token: (() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -26,7 +37,6 @@ const initialState = {
     }
     return null;
   })(),
-  // role : null,
   isAuthenticated: !!localStorage.getItem("token"), // If token exists, user is authenticated
   loading: false,
   error: null,
@@ -49,7 +59,7 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         localStorage.setItem("token", action.payload.token);
         localStorage.setItem("role", action.payload.role);
-
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
       } else {
         console.error('Token is undefined or missing');
       }
@@ -63,6 +73,8 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       localStorage.removeItem("token");
       localStorage.removeItem("role");
+      localStorage.removeItem("user");
+
     },
 
     setError(state, action) {

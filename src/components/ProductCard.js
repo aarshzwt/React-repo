@@ -24,23 +24,28 @@ const ProductCard = () => {
             setProduct(productResponse.data.product);
     
             const cartResponse = await axiosInstance.get('cart');
-            dispatch(setCartItems(cartResponse.data.cartItems));
+            dispatch(setCartItems(cartResponse?.data?.cartItems));
           } catch (error) {
-            console.error('Failed to fetch data', error);
+            if(error.status === 404){
+              console.error("no items in cart")
+            }
           }
         };
-    
         fetchData();
       }, [id, dispatch]);
 
       const handleCart = async (product_id) => {
           try {
+            if(product.stock === 0){
+              toast.error(`Not enough stock available. Only ${product.stock} available.`);
+            }
               const response = await axiosInstance.post('cart', { product_id, quantity: 1 });
               dispatch(addToCart({ product_id }));
               toast.success("Item Added to Cart Successfully");
               navigate("/cart");  
           } catch (error) {
-              dispatch(setError('Failed to add to cart'));
+            console.log(error)
+            dispatch(setError('Failed to add to cart'));
               if(error.status === 401){
                 toast.error("Login before continuing order process")
               }
