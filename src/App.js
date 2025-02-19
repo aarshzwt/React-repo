@@ -20,7 +20,7 @@ import OrderHistory from './components/OrderHistory.js';
 import OrderStatusUpdate from './components/OrderStatusUpdate.js';
 import ProductsByCategoryGrid from './components/ProductsByCategory.js';
 import AddCategoryForm from './components/AddCategoryForm.js';
-
+import PaymentSuccess from './components/PaymentSuccess.js'
 function App() {
   return (
     <>
@@ -34,6 +34,7 @@ function App() {
       <Route path='/cart' element={<Cart></Cart>} />
       <Route path="/users/profile" element={<UserProfile />} />
       <Route path="/users/profile/update" element={<UpdateUserProfile />} />
+      <Route path="/payment" element= {<PaymentSuccess />} />
       <Route path="/order" element={<OrderConfirmation />} />
       <Route path="/orders" element={<OrderHistory />} />
       <Route path="/orders/update" element={<OrderStatusUpdate />} />

@@ -6,6 +6,7 @@ const initialState = {
     loading: false,
     error: null,
     orderData: null,
+    tempOrderData:null
 };
 
 // Create the cart slice
@@ -49,9 +50,13 @@ const cartSlice = createSlice({
         setOrderData: (state, action) => {
             state.orderData = action.payload;
         },
+        setTempOrderData: (state, action) => {
+            state.tempOrderData = action.payload;
+        },
+
     },
 });
 
-export const { setLoading, setError, setCartItems, addToCart, removeFromCart, updateCartQuantity, setOrderData } = cartSlice.actions;
+export const { setLoading, setError, setCartItems, addToCart, removeFromCart, updateCartQuantity, setOrderData, setTempOrderData } = cartSlice.actions;
 
 export default cartSlice.reducer;

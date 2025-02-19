@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FiMinus, FiPlus, FiTrash2, FiHeart } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { removeFromCart, updateCartQuantity, setError, setLoading, setOrderData, setCartItems } from "../redux/slices/cartSlice";
+import { removeFromCart, updateCartQuantity, setError, setLoading, setOrderData, setCartItems, setTempOrderData } from "../redux/slices/cartSlice";
 import axiosInstance from "../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -90,9 +90,11 @@ const Cart = () => {
     try {
       const response = await axiosInstance.post("/orders");
       const orderData = response.data;
-      dispatch(setOrderData(orderData));
+      // dispatch(setTempOrderData(orderData));
+      dispatch(setOrderData(orderData.razorpayOrder));
+      console.log("orderData", orderData);
       toast.success("Order Placed Successfully");
-      navigate("/order");
+      navigate("/payment");
     } catch (err) {
       toast.error("Order could not be placed");
       dispatch(setError("Error placing order."));
