@@ -1,28 +1,54 @@
 import React, { useState, useEffect } from "react";
 import { FaCheck, FaPrint, FaEnvelope, FaTruck } from "react-icons/fa";
 import axiosInstance from "../utils/axiosInstance";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setOrderDetails } from "../redux/slices/cartSlice";
 
 const OrderConfirmation = () => {
-  const [orderDetails, setOrderDetails] = useState(null);
+  const orderDetails = useSelector((state) => state.cart.orderDetails);
+  const userData = useSelector((state) => state.auth.user);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const orderData = useSelector((state) => state.cart.orderData);
-
+  const dispatch = useDispatch();
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await axiosInstance.get(`orders/${orderData.order.id}`);
-        setOrderDetails(response.data);
-        console.log("order details",response.data);
+        console.log("orderData.id in fetchOrderDetails", orderData.id);
+        const response = await axiosInstance.get(`orders/${orderData.id}`);
+        dispatch(setOrderDetails(response.data));
+        console.log("orderDetails", response.data);
+      
         setLoading(false);
       } catch (err) {
+        console.log(err)
         setError("Failed to fetch order details");
         setLoading(false);
       }
     };
-      fetchOrderDetails();
-  }, []);
+    fetchOrderDetails();
+  }, [dispatch, orderData.id]);
+
+
+  useEffect(() => {
+    const sendMail = async () => {
+      try {
+        const mailResponse = await axiosInstance.post("orders/sendMail", {
+          orderDetails,
+          email: userData.email,
+        });
+        console.log("mailResponse", mailResponse);
+      } catch (error) {
+        console.error("Error sending email:", error);
+      }
+    };
+
+    if (orderDetails?.order?.id) {
+      sendMail();
+    }
+  }, [orderDetails]);
+
 
   if (loading) {
     return <p>Loading order details...</p>;
@@ -60,7 +86,7 @@ const OrderConfirmation = () => {
             <div>
               <p className="text-sm text-gray-600">Order Date</p>
               <p className="font-semibold">
-              {new Date(orderDetails.order.createdAt).toLocaleDateString()}
+                {new Date(orderDetails.order.createdAt).toLocaleDateString()}
               </p>
             </div>
             <div>
@@ -96,7 +122,7 @@ const OrderConfirmation = () => {
                   <p className="text-gray-600">Quantity: {product.quantity}</p>
                 </div>
                 <p className="font-semibold">
-                ₹{(product.price * product.quantity).toFixed(2)}
+                  ₹{(product.price)}
                 </p>
               </div>
             ))
@@ -110,7 +136,7 @@ const OrderConfirmation = () => {
             <div className="flex justify-between">
               <p className="text-gray-600">Subtotal</p>
               <p className="font-medium">
-              ₹{parseFloat(orderDetails?.order?.total_price).toFixed(2)}
+                ₹{parseFloat(orderDetails?.order?.total_price).toFixed(2)}
               </p>
             </div>
             <div className="flex justify-between">
@@ -125,7 +151,7 @@ const OrderConfirmation = () => {
               <div className="flex justify-between">
                 <p className="text-lg font-semibold">Total</p>
                 <p className="text-lg font-semibold">
-                ₹{parseFloat(orderDetails?.order?.total_price).toFixed(2)}
+                  ₹{parseFloat(orderDetails?.order?.total_price).toFixed(2)}
                 </p>
               </div>
             </div>

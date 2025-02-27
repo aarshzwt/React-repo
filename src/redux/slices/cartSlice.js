@@ -6,7 +6,7 @@ const initialState = {
     loading: false,
     error: null,
     orderData: null,
-    tempOrderData:null
+    orderDetails:null
 };
 
 // Create the cart slice
@@ -37,7 +37,6 @@ const cartSlice = createSlice({
         },
         removeFromCart(state, action) {
             const { id } = action.payload;
-            console.log("id", id)
             state.cartItems = state.cartItems.filter(item => item.id !== id);
         },
         updateCartQuantity(state, action) {
@@ -50,13 +49,13 @@ const cartSlice = createSlice({
         setOrderData: (state, action) => {
             state.orderData = action.payload;
         },
-        setTempOrderData: (state, action) => {
-            state.tempOrderData = action.payload;
+        setOrderDetails: (state, action) => {
+            state.orderDetails = action.payload;
         },
 
     },
 });
 
-export const { setLoading, setError, setCartItems, addToCart, removeFromCart, updateCartQuantity, setOrderData, setTempOrderData } = cartSlice.actions;
+export const { setLoading, setError, setCartItems, addToCart, removeFromCart, updateCartQuantity, setOrderData, setOrderDetails } = cartSlice.actions;
 
 export default cartSlice.reducer;

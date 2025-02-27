@@ -141,11 +141,11 @@ const OrderHistory = () => {
               <div className="ml-4 flex-grow">
                 <h3 className="font-semibold">{item.Product.name}</h3>
                 <p className="text-gray-600">Quantity: {item.quantity}</p>
-                <p className="text-gray-800">₹{item.price} each</p>
+                <p className="text-gray-800">₹{item.Product.price} each</p>
               </div>
               <div className="text-right">
                 <p className="font-bold">
-                  ₹{(item.price * item.quantity).toFixed(2)}
+                  ₹{(item.price)}
                 </p>
               </div>
             </div>
