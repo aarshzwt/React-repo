@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaTrash, FaPen } from "react-icons/fa";
+import { FaAngleLeft, FaAngleRight, FaAngleDoubleLeft, FaAngleDoubleRight } from 'react-icons/fa';
 import axiosInstance from "../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -63,7 +64,7 @@ const ProductCard = React.memo(({ product}) => {
         </p>
         <div>
           <span className="text-xl font-bold text-gray-900">
-            ${product.price}
+          ₹{product.price}
           </span>
         </div>
       </div>
@@ -74,20 +75,68 @@ const ProductCard = React.memo(({ product}) => {
 const ProductGridAdmin = () => {
   const dispatch = useDispatch();
   const { products, loading, error } = useSelector((state) => state.product);
+const [totalPages, setTotalPages] = useState(0);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (page =1) => {
     dispatch(setLoading());
     try {
-      const response = await axiosInstance.get('products');
+      const response = await axiosInstance.get('products',{
+        params: {
+            page: page,
+            limit: 5
+        },
+    });
       dispatch(setProducts(response.data.products));
+      setTotalPages(response.data.pagination.totalPages);
     } catch (error) {
       dispatch(setError('Failed to fetch products'));
     }
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+
   useEffect(() => {
-    fetchProducts();
-  }, [dispatch]);
+    fetchProducts(currentPage);
+  }, [currentPage]);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+        setCurrentPage(page);
+    }
+};
+
+const renderPageNumbers = () => {
+    console.log("totalpages in renderPageNumbers()", totalPages)
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        pageNumbers.push(
+            <button
+                key={i}
+                onClick={() => handlePageChange(i)}
+                className={`px-3 py-2 mx-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${currentPage === i
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-white text-gray-700 hover:bg-gray-100'
+                    }`}
+                aria-label={`Page ${i}`}
+                aria-current={currentPage === i ? 'page' : undefined}
+            >
+                {i}
+            </button>
+        );
+    }
+
+    return pageNumbers;
+};
+
 
   if (loading) {
     return <p>Loading products...</p>;
@@ -109,6 +158,42 @@ const ProductGridAdmin = () => {
           />
         ))}
       </div>
+
+       <nav className="flex flex-wrap items-center justify-center space-x-2 my-8" aria-label="Pagination">
+                      <button
+                          onClick={() => handlePageChange(1)}
+                          disabled={currentPage === 1}
+                          className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                          aria-label="First page"
+                      >
+                          <FaAngleDoubleLeft className="w-5 h-5" />
+                      </button>
+                      <button
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          disabled={currentPage === 1}
+                          className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                          aria-label="Previous page"
+                      >
+                          <FaAngleLeft className="w-5 h-5" />
+                      </button>
+                      {renderPageNumbers()}
+                      <button
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                          className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                          aria-label="Next page"
+                      >
+                          <FaAngleRight className="w-5 h-5" />
+                      </button>
+                      <button
+                          onClick={() => handlePageChange(totalPages)}
+                          disabled={currentPage === totalPages}
+                          className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                          aria-label="Last page"
+                      >
+                          <FaAngleDoubleRight className="w-5 h-5" />
+                      </button>
+                  </nav>
     </div>
   );
 };
