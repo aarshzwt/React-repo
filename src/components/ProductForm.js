@@ -26,14 +26,14 @@ const ProductForm = () => {
 
   const fetchCategories = async () => {
     try {
-        dispatch(setLoading());
-        const response = await axiosInstance.get('categories');
-        setCategoriesState(response.data.categories);
-        dispatch(setCategories(response.data.categories));
+      dispatch(setLoading());
+      const response = await axiosInstance.get('categories');
+      setCategoriesState(response.data.categories);
+      dispatch(setCategories(response.data.categories));
     } catch (error) {
-        dispatch(setError('Failed to fetch categories'));
+      dispatch(setError('Failed to fetch categories'));
     }
-};
+  };
   const validateForm = () => {
     const newErrors = {};
 
@@ -78,7 +78,7 @@ const ProductForm = () => {
         return;
       }
 
-      if (file.size > 2 * 1024 * 1024) { 
+      if (file.size > 2 * 1024 * 1024) {
         setErrors((prev) => ({
           ...prev,
           image: "The file must be less than 2MB."
@@ -95,7 +95,7 @@ const ProductForm = () => {
 
   const removeImage = () => {
     setFormData(prev => ({ ...prev, image: null }));
-    setImagePreview(null); 
+    setImagePreview(null);
   };
 
   const handleSubmit = async (e) => {
@@ -144,7 +144,7 @@ const ProductForm = () => {
           ...prev,
           form: "An error occurred while adding the product. Please try again.",
         }));
-      }finally {
+      } finally {
         setIsSubmitting(false);
       }
     }
@@ -229,22 +229,22 @@ const ProductForm = () => {
             </div>
 
             <div>
-                            <label htmlFor="category_id" className="block text-sm font-medium text-gray-700">Category</label>
-                            <select
-                                id="category_id"
-                                value={formData.category_id}
-                                onChange={(e) => setFormData(prev => ({ ...prev, category_id: e.target.value }))}
-                                className={`mt-1 block w-full rounded-md shadow-sm ${errors.category_id ? 'border-red-500' : 'border-gray-300'} focus:ring-indigo-500 focus:border-indigo-500`}
-                            >
-                                <option value="">Select a category</option>
-                                {categories.map((category) => (
-                                    <option key={category.id} value={category.id}>
-                                        {category.name}
-                                    </option>
-                                ))}
-                            </select>
-                            {errors.category_id && <p className="mt-1 text-sm text-red-500">{errors.category_id}</p>}
-                        </div>
+              <label htmlFor="category_id" className="block text-sm font-medium text-gray-700">Category</label>
+              <select
+                id="category_id"
+                value={formData.category_id}
+                onChange={(e) => setFormData(prev => ({ ...prev, category_id: e.target.value }))}
+                className={`mt-1 block w-full rounded-md shadow-sm ${errors.category_id ? 'border-red-500' : 'border-gray-300'} focus:ring-indigo-500 focus:border-indigo-500`}
+              >
+                <option value="">Select a category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+              {errors.category_id && <p className="mt-1 text-sm text-red-500">{errors.category_id}</p>}
+            </div>
             <div>
               <label htmlFor="brand" className="block text-sm font-medium text-gray-700">Brand</label>
               <input
@@ -255,7 +255,7 @@ const ProductForm = () => {
                 className={`mt-1 block w-full rounded-md shadow-sm ${errors.brand ? 'border-red-500' : 'border-gray-300'} focus:ring-indigo-500 focus:border-indigo-500`}
                 placeholder="Enter brand name"
               />
-               {errors.brand && <p className="mt-1 text-sm text-red-500">{errors.brand}</p>}
+              {errors.brand && <p className="mt-1 text-sm text-red-500">{errors.brand}</p>}
             </div>
 
             <div className="md:col-span-2">
@@ -310,7 +310,7 @@ const ProductForm = () => {
           </div>
         </form>
 
-       
+
       </div>
     </div>
   );

@@ -6,20 +6,19 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import Form from 'react-bootstrap/Form';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout, setError, setLoading } from '../redux/slices/authSlice';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaCartPlus } from 'react-icons/fa';
 
 
-export function CustomNavbar() {
+function CustomNavbar() {
 
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const role = useSelector((state) => state.auth.role);
-console.log("isAuthenticated", isAuthenticated)
-console.log("role", role)
+  console.log("isAuthenticated", isAuthenticated)
+  console.log("role", role)
 
   //using the redux state fetching categories so dont need to call apis again and again
   const categories = useSelector((state) => state.category.categories);
-  console.log(categories);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -64,44 +63,44 @@ console.log("role", role)
             </Nav>
 
             {isAuthenticated ? (
-              <Nav>
+              <Nav className='flex justify-between gap-4'>
                 {role === 'customer' && (
-                  <Nav.Link href="/cart">
+                  <Link to="/cart" className='no-underline text-gray-400'>
                     <FaCartPlus className='text-gray-600 w-5 h-5 ' /> Cart
-                  </Nav.Link>
+                  </Link>
                 )}
                 {role === 'customer' && (
-                  <Nav.Link href="/orders">
-                   Orders
-                  </Nav.Link>
+                  <Link to="/orders" className='no-underline text-gray-400'>
+                    Orders
+                  </Link>
                 )}
                 {role === 'admin' && (
-                  <Nav.Link href="/users">
+                  <Link to="/users" className='no-underline text-gray-400'>
                     Users List
-                  </Nav.Link> 
+                  </Link>
                 )}
                 {role === 'admin' && (
-                  <Nav.Link href="/product/add">
+                  <Link to="/product/add" className='no-underline text-gray-400'>
                     Add Product
-                  </Nav.Link> 
+                  </Link>
                 )}
                 {role === 'admin' && (
-                  <Nav.Link href="/admin/product">
-                   Update Product
-                  </Nav.Link>                
+                  <Link to="/admin/product" className='no-underline text-gray-400'>
+                    Update Product
+                  </Link>
                 )}
-                 {role === 'admin' && (
-                  <Nav.Link href="/orders/update">
-                   Update Order
-                  </Nav.Link>                
+                {role === 'admin' && (
+                  <Link to="/orders/update" className='no-underline text-gray-400'>
+                    Update Order
+                  </Link>
                 )}
-                <Nav.Link href="/users/profile">Profile</Nav.Link>
-                <Nav.Link href="/logout" onClick={handleLogout}>Logout</Nav.Link>
+                <Link to="/users/profile" className='no-underline text-gray-400'>Profile</Link>
+                <Link to="/logout" className='no-underline text-gray-400' onClick={handleLogout}>Logout</Link>
               </Nav>
             ) : (
               <Nav>
-                <Nav.Link href="/login">Login</Nav.Link>
-                <Nav.Link href="/signup">SignUp</Nav.Link>
+                <Link to="/login" className='no-underline text-gray-400'>Login</Link>
+                <Link to="/signup" className='no-underline text-gray-400'>SignUp</Link>
               </Nav>
             )}
           </Navbar.Collapse>
@@ -111,3 +110,5 @@ console.log("role", role)
     </>
   )
 }
+
+export default CustomNavbar;

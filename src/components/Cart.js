@@ -27,7 +27,7 @@ const Cart = () => {
 
   useEffect(() => {
     fetchCartItemsAndDetails();
-  }, [dispatch]);
+  }, []);
 
   const handleCartQuantityChange = async (product_id, action) => {
     try {
@@ -45,7 +45,7 @@ const Cart = () => {
           return;
         }
 
-        updatedCartItems[index] = { 
+        updatedCartItems[index] = {
           ...updatedCartItems[index],
           quantity: updatedCartItems[index].quantity + 1
         };
@@ -89,15 +89,20 @@ const Cart = () => {
   const placeOrder = async () => {
     try {
       const response = await axiosInstance.post("/orders");
-      const orderData = response.data;
-      // dispatch(setTempOrderData(orderData));
-      dispatch(setOrderData(orderData.razorpayOrder));
-      console.log("orderData", orderData);
-      toast.success("Order Placed Successfully");
-      navigate("/payment");
+      const orderData = response?.data;
+      if (orderData) {
+        dispatch(setOrderData(orderData.razorpayOrder));
+        console.log("orderData", orderData);
+        toast.success("Order processing initiated");
+        navigate("/payment");
+      }
     } catch (err) {
-      toast.error("Order could not be placed");
-      dispatch(setError("Error placing order."));
+      if (err.response?.status === 400) {
+        toast.error("Could not place order, stock unavailable");
+      } else {
+        toast.error("Order could not be placed");
+        dispatch(setError("Error placing order."));
+      }
     }
   };
 
@@ -141,7 +146,7 @@ const Cart = () => {
                     <div className="flex-1">
                       <div className='uppercase tracking-wide text-sm text-indigo-500 font-semibold'>{item.product.brand}</div>
                       <h3 className="text-lg font-semibold text-gray-700 cursor-pointer hover:text-black" onClick={() => navigate(`/products/${item.product.id}`)}>{item.product.name}</h3>
-                      <p className="text-gray-600">${item.product.price}</p>
+                      <p className="text-gray-600">₹{item.product.price}</p>
 
                       <div className="flex items-center mt-2 space-x-2">
                         <button onClick={() => handleCartQuantityChange(item.product.id, 'decrease')} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
@@ -156,7 +161,7 @@ const Cart = () => {
 
                     <div className="flex flex-col items-end space-y-2">
                       <span className="font-semibold text-lg text-gray-800 dark:text-white">
-                        ${(item.product.price * item.quantity)}
+                      ₹{(item.product.price * item.quantity)}
                       </span>
                       <div className="flex space-x-1">
                         <button onClick={() => handleRemoveItem(item.id)} className="p-2 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -179,7 +184,7 @@ const Cart = () => {
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
-                  <span> ${cartItems.reduce((sum, item) => {
+                  <span> ₹{cartItems.reduce((sum, item) => {
                     if (item.product && item.product.price) {
                       return sum + item.product.price * item.quantity;
                     }
@@ -196,7 +201,7 @@ const Cart = () => {
               <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
                 <div className="flex justify-between text-lg font-bold text-gray-800">
                   <span>Total</span>
-                  ${cartItems.reduce((sum, item) => {
+                  ₹{cartItems.reduce((sum, item) => {
                     if (item.product && item.product.price) {
                       return sum + item.product.price * item.quantity;
                     }

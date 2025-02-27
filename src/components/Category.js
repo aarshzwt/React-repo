@@ -10,8 +10,7 @@ export default function Category() {
     const navigate = useNavigate();
     const { categories, loading, error } = useSelector((state) => state.category);
 
-
-    const [productsByCategory, setProductsByCategory] = useState({});
+    // const [productsByCategory, setProductsByCategory] = useState({});
     const role = useSelector((state) => state.auth.role);
 
     const fetchCategories = async () => {
@@ -25,21 +24,21 @@ export default function Category() {
     };
 
     // Fetch products by category
-    const fetchProductsByCategory = async (categoryId) => {
-        try {
-            const response = await axiosInstance.get(`categories/products/${categoryId}`);
-            setProductsByCategory((prevState) => ({
-                ...prevState,
-                [categoryId]: response.data.product,
-            }));
-        } catch (error) {
-            setProductsByCategory((prevState) => ({
-                ...prevState,
-                [categoryId]: [], // No products found, set empty array
-            }));
-            console.error('Error fetching products for category:', error);
-        }
-    };
+    // const fetchProductsByCategory = async (categoryId) => {
+    //     try {
+    //         const response = await axiosInstance.get(`categories/products/${categoryId}`);
+    //         setProductsByCategory((prevState) => ({
+    //             ...prevState,
+    //             [categoryId]: response.data.product,
+    //         }));
+    //     } catch (error) {
+    //         setProductsByCategory((prevState) => ({
+    //             ...prevState,
+    //             [categoryId]: [], // No products found, set empty array
+    //         }));
+    //         console.error('Error fetching products for category:', error);
+    //     }
+    // };
 
     useEffect(() => {
         fetchCategories();

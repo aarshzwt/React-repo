@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { FiUpload, FiX } from "react-icons/fi";
 import axiosInstance from "../utils/axiosInstance";
 import { useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { setCategories, setError, setLoading } from "../redux/slices/categorySlice";
 import toast from "react-hot-toast";
 
 const ProductUpdateForm = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -54,8 +55,7 @@ const ProductUpdateForm = () => {
                         brand: fetchedProduct.brand,
                     });
                     if(fetchedProduct.image_url)
-                        setImagePreview(`http://localhost:5000${fetchedProduct.image_url}`);
-                        
+                        setImagePreview(`http://localhost:5000${fetchedProduct.image_url}`);                       
                 }
             } catch (error) {
                 console.error('Failed to fetch product', error);
@@ -72,7 +72,7 @@ const ProductUpdateForm = () => {
             }
         };
 
-    }, [id, imagePreview, dispatch]);
+    }, [id, dispatch]);
 
 
     const validateForm = () => {
@@ -165,6 +165,7 @@ const ProductUpdateForm = () => {
                     });
                     setImagePreview(null); // Clear image preview
                     toast.success("Product Updated Successfully");
+                    navigate(`/admin/product`);
                 }
                 console.log("success");
             } catch (error) {
