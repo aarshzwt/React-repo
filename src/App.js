@@ -1,10 +1,8 @@
-import logo from './logo.svg';
 import './App.css';
 import './index.css';
 import { Route, Routes } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Welcome from './components/Welcome.js';
-import {CustomNavbar} from './components/Navbar.js';
 import Signup from './components/Signup.js';
 import Login from './components/Login.js';
 import ProductCard from './components/ProductCard.js';
@@ -21,29 +19,38 @@ import OrderStatusUpdate from './components/OrderStatusUpdate.js';
 import ProductsByCategoryGrid from './components/ProductsByCategory.js';
 import AddCategoryForm from './components/AddCategoryForm.js';
 import PaymentSuccess from './components/PaymentSuccess.js'
+import Layout from './components/Layout.js';
+import PrivateRoute from './components/PrivateRoute.js';
+
 function App() {
   return (
     <>
-    <CustomNavbar/>
-    <Routes>
-      <Route path="/" element={<Welcome></Welcome>} />
-      <Route path='/signup' element={<Signup></Signup>} />
-      <Route path='/login' element={<Login />} />
-      <Route path="/products/:id" element={<ProductCard />} />
-      <Route path= "/productsByCategory/:id" element= {<ProductsByCategoryGrid />} />
-      <Route path='/cart' element={<Cart></Cart>} />
-      <Route path="/users/profile" element={<UserProfile />} />
-      <Route path="/users/profile/update" element={<UpdateUserProfile />} />
-      <Route path="/payment" element= {<PaymentSuccess />} />
-      <Route path="/order" element={<OrderConfirmation />} />
-      <Route path="/orders" element={<OrderHistory />} />
-      <Route path="/orders/update" element={<OrderStatusUpdate />} />
-      <Route path="/product/add" element={<ProductForm />} />
-      <Route path="/admin/product" element={<ProductGridAdmin />} />
-      <Route path="/products/update/:id" element={<ProductUpdateForm />} />
-      <Route path='/users' element={<UsersList/>} />
-      <Route path='/category/add' element={< AddCategoryForm/>} />
-    </Routes>
+      <Routes>
+        <Route path='/' element={<Layout></Layout>}>
+
+          <Route path="/" element={<Welcome />} />
+          <Route path='/signup' element={<Signup />} />
+          <Route path='/login' element={<Login />} />
+          <Route path="/products/:id" element={<ProductCard />} />
+          <Route path="/productsByCategory/:id" element={<ProductsByCategoryGrid />} />
+
+
+          <Route path='/cart' element={<PrivateRoute roles={['customer']}><Cart /></PrivateRoute>} />
+          <Route path="/payment" element={<PrivateRoute roles={['customer']}> <PaymentSuccess /> </PrivateRoute>} />
+          <Route path="/order" element={<PrivateRoute roles={['customer']}> <OrderConfirmation /> </PrivateRoute>} />
+          <Route path="/orders" element={<PrivateRoute roles={['customer']}> <OrderHistory /> </PrivateRoute>} />
+
+          <Route path="/orders/update" element={<PrivateRoute roles={['admin']}><OrderStatusUpdate /></PrivateRoute>} />
+          <Route path="/product/add" element={<PrivateRoute roles={['admin']}><ProductForm /></PrivateRoute>} />
+          <Route path="/admin/product" element={<PrivateRoute roles={['admin']}><ProductGridAdmin /></PrivateRoute>} />
+          <Route path="/products/update/:id" element={<PrivateRoute roles={['admin']}><ProductUpdateForm /></PrivateRoute>} />
+          <Route path='/users' element={<PrivateRoute roles={['admin']}><UsersList /></PrivateRoute>} />
+          <Route path='/category/add' element={<PrivateRoute roles={['admin']}>< AddCategoryForm /></PrivateRoute>} />
+
+          <Route path="/users/profile" element={<PrivateRoute roles={['customer', 'admin']}> <UserProfile /> </PrivateRoute>} />
+          <Route path="/users/profile/update" element={<PrivateRoute roles={['customer', 'admin']}> <UpdateUserProfile /> </PrivateRoute>} />
+        </Route>
+      </Routes>
     </>
   );
 }
