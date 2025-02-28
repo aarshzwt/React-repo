@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -8,12 +8,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout, setError, setLoading } from '../redux/slices/authSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaCartPlus } from 'react-icons/fa';
-
+import {jwtDecode} from 'jwt-decode';
 
 function CustomNavbar() {
 
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const role = useSelector((state) => state.auth.role);
+  // const [role, setRole] = useState(null);
+  // const token = localStorage.getItem("token");
+  // if (token) {
+  //   console.log("token in nav", token)
+  //   const decodedToken = jwtDecode(token);
+  //   setRole(decodedToken.role);
+  //   console.log("role in nav", role);
+  // }
   console.log("isAuthenticated", isAuthenticated)
   console.log("role", role)
 
