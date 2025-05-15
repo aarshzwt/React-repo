@@ -15,30 +15,6 @@ export default function Login() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     
-    // const [formData, setFormData] = useState({
-    //     email: '',
-    //     password: '',
-    // });
-
-    // const [errors, setErrors] = useState({
-    //     email: '',
-    //     password: '',
-    // });
-    // const handleChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setFormData((prevState) => ({
-    //         ...prevState,
-    //         [name]: value,
-    //     }));
-
-    //     // Clear errors on change
-    //     setErrors((prevState) => ({
-    //         ...prevState,
-    //         [name]: '',
-    //     }));
-    // };
-
-
     const validate = values => {
         const errors = {};
         if (!values.email) {
@@ -69,6 +45,7 @@ export default function Login() {
                     user: data.user,
                     role: data.user.role,
                     token: data.token,
+                    refreshToken: data.refreshToken,
                 }));
     
                 if (data.token) {
@@ -83,52 +60,6 @@ export default function Login() {
             }
         },
     });
-
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-
-    //     // Validation
-    //     let formIsValid = true;
-    //     let newErrors = { email: '', password: '' };
-
-    //     if (!formData.email) {
-    //         formIsValid = false;
-    //         newErrors.email = 'Email is required.';
-    //     }
-
-    //     if (!formData.password) {
-    //         formIsValid = false;
-    //         newErrors.password = 'Password is required.';
-    //     }
-
-    //     if (!formIsValid) {
-    //         setErrors(newErrors);
-    //         return;
-    //     }
-
-    //     dispatch(setLoading(true));
-
-    //     try {
-    //         const response = await axiosInstance.post('auth/login', formData);
-    //         const { data } = response;
-
-    //         dispatch(setUserData({
-    //             user: data.user,
-    //             role: data.user.role,
-    //             token: data.token,
-    //         }));
-
-    //         if (data.token) {
-    //             toast.success('User logged in successfully!');
-    //             navigate("/"); 
-    //         } else {
-    //             toast.error('Login failed: Invalid credentials or missing token.');
-    //         }
-    //     } catch (error) {
-    //         toast.error('Login failed: Invalid credentials');
-    //         dispatch(setError(error.response?.data?.message || 'Login failed.'));
-    //     }
-    // };
 
     return (
         <div className="flex flex-col justify-center items-center h-screen bg-gray-100">

@@ -13,18 +13,8 @@ const initialState = {
     }
     return null; 
   })(),
-  token: (() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        return JSON.parse(token);
-      } catch (error) {
-        console.error('Error parsing token from localStorage:', error);
-        return null;
-      }
-    }
-    return null;
-  })(),
+  token: localStorage.getItem('token') || null,
+  refreshToken: localStorage.getItem('refreshToken') || null,
   role: (() => {
     const role = localStorage.getItem('role');
     if (role) {
@@ -55,11 +45,13 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.role = action.payload.role;
       state.isAuthenticated = true;
-      if (action.payload.token) {
+      if (action.payload.token && action.payload.refreshToken) {
         state.token = action.payload.token;
+        state.refreshToken = action.payload.refreshToken;
         localStorage.setItem("token", action.payload.token);
         localStorage.setItem("role", action.payload.role);
         localStorage.setItem("user", JSON.stringify(action.payload.user));
+        localStorage.setItem("refreshToken", action.payload.refreshToken);
       } else {
         console.error('Token is undefined or missing');
       }
@@ -74,7 +66,7 @@ const authSlice = createSlice({
       localStorage.removeItem("token");
       localStorage.removeItem("role");
       localStorage.removeItem("user");
-
+      localStorage.removeItem("refreshToken");
     },
 
     setError(state, action) {

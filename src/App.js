@@ -21,10 +21,13 @@ import AddCategoryForm from './components/AddCategoryForm.js';
 import PaymentSuccess from './components/PaymentSuccess.js'
 import Layout from './components/Layout.js';
 import PrivateRoute from './components/PrivateRoute.js';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <>
+      <Toaster />
+
       <Routes>
         <Route path='/' element={<Layout></Layout>}>
 
